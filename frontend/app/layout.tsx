@@ -1,9 +1,15 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "TaskFlow — Serverless Task Manager",
   description: "A blazing-fast task management app built on AWS serverless infrastructure",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#0f0f13",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
