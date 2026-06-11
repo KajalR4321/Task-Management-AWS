@@ -1,9 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: 'standalone',
+  output: 'export',
+  trailingSlash: true,
   images: {
-    domains: ['taskflow-attachments.s3.amazonaws.com'],
+    unoptimized: true,
   },
 };
 
