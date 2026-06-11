@@ -1,7 +1,8 @@
 'use client';
 import { useState } from 'react';
-import { LayoutDashboard, Kanban, List, FolderOpen, Plus, CheckSquare, X } from 'lucide-react';
+import { LayoutDashboard, Kanban, List, FolderOpen, Plus, CheckSquare, X, LogOut } from 'lucide-react';
 import { Project } from '@/lib/api';
+import { auth } from '@/lib/auth';
 
 interface SidebarProps {
   projects: Project[];
@@ -10,11 +11,14 @@ interface SidebarProps {
   onProjectSelect: (id: string | null) => void;
   onViewChange: (view: string) => void;
   onCreateProject: (name: string, color: string) => void;
+  userName?: string;
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
 const COLORS = ['#7c6af7','#4ade80','#fb923c','#f97066','#38bdf8','#e879f9','#fbbf24'];
 
-export default function Sidebar({ projects, activeProject, activeView, onProjectSelect, onViewChange, onCreateProject }: SidebarProps) {
+export default function Sidebar({ projects, activeProject, activeView, onProjectSelect, onViewChange, onCreateProject, userName = 'Demo User', isOpen = true, onClose }: SidebarProps) {
   const [showNewProject, setShowNewProject] = useState(false);
   const [newName, setNewName] = useState('');
   const [newColor, setNewColor] = useState(COLORS[0]);
@@ -22,21 +26,42 @@ export default function Sidebar({ projects, activeProject, activeView, onProject
   const handleCreate = () => {
     if (!newName.trim()) return;
     onCreateProject(newName.trim(), newColor);
-    setNewName('');
-    setNewColor(COLORS[0]);
-    setShowNewProject(false);
+    setNewName(''); setNewColor(COLORS[0]); setShowNewProject(false);
+  };
+
+  const handleNavClick = (view: string) => {
+    onViewChange(view);
+    onProjectSelect(null);
+    if (onClose) onClose();
+  };
+
+  const handleProjectClick = (id: string) => {
+    onProjectSelect(id);
+    onViewChange('board');
+    if (onClose) onClose();
   };
 
   return (
-    <aside style={{ width: 240, background: 'var(--surface)', borderRight: '1px solid var(--border)', display: 'flex', flexDirection: 'column', height: '100vh', position: 'fixed', left: 0, top: 0 }}>
+    <aside style={{
+      width: 240, background: 'var(--surface)', borderRight: '1px solid var(--border)',
+      display: 'flex', flexDirection: 'column', height: '100vh',
+      position: 'fixed', left: 0, top: 0, zIndex: 99,
+      transform: isOpen ? 'translateX(0)' : 'translateX(-100%)',
+      transition: 'transform 0.25s ease',
+    }}>
       {/* Logo */}
-      <div style={{ padding: '1.25rem 1.25rem 1rem', borderBottom: '1px solid var(--border)' }}>
+      <div style={{ padding: '1.25rem 1.25rem 1rem', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
           <div style={{ background: 'var(--accent)', borderRadius: 8, padding: '0.4rem', display: 'flex' }}>
             <CheckSquare size={16} color="white" />
           </div>
-          <span style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--text)' }}>TaskFlow</span>
+          <span style={{ fontWeight: 700, fontSize: '1rem' }}>TaskFlow</span>
         </div>
+        {onClose && (
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', display: 'flex' }}>
+            <X size={18} />
+          </button>
+        )}
       </div>
 
       {/* Nav */}
@@ -46,7 +71,7 @@ export default function Sidebar({ projects, activeProject, activeView, onProject
           { id: 'board', label: 'Board View', icon: Kanban },
           { id: 'list', label: 'List View', icon: List },
         ].map(({ id, label, icon: Icon }) => (
-          <button key={id} onClick={() => { onViewChange(id); onProjectSelect(null); }}
+          <button key={id} onClick={() => handleNavClick(id)}
             style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.55rem 0.75rem', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: '0.875rem', fontWeight: 500, marginBottom: 2,
               background: activeView === id && !activeProject ? 'var(--accent-soft)' : 'transparent',
               color: activeView === id && !activeProject ? 'var(--accent)' : 'var(--text-muted)',
@@ -66,7 +91,7 @@ export default function Sidebar({ projects, activeProject, activeView, onProject
         </div>
 
         {projects.map(p => (
-          <button key={p.projectId} onClick={() => { onProjectSelect(p.projectId); onViewChange('board'); }}
+          <button key={p.projectId} onClick={() => handleProjectClick(p.projectId)}
             style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.5rem 0.75rem', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: '0.85rem', marginBottom: 2,
               background: activeProject === p.projectId ? 'var(--accent-soft)' : 'transparent',
               color: activeProject === p.projectId ? 'var(--accent)' : 'var(--text-muted)',
@@ -97,11 +122,15 @@ export default function Sidebar({ projects, activeProject, activeView, onProject
       {/* Footer */}
       <div style={{ padding: '1rem', borderTop: '1px solid var(--border)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-          <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', fontWeight: 700, color: 'white' }}>D</div>
-          <div>
-            <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text)' }}>Kajal Rajak</div>
-            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>kajal@taskflow.app</div>
+          <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', fontWeight: 700, color: 'white', flexShrink: 0 }}>
+            {userName.charAt(0).toUpperCase()}
           </div>
+          <div style={{ flex: 1, overflow: 'hidden' }}>
+            <div style={{ fontSize: '0.8rem', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{userName}</div>
+          </div>
+          <button onClick={() => auth.logout()} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', display: 'flex' }} title="Logout">
+            <LogOut size={16} />
+          </button>
         </div>
       </div>
     </aside>

@@ -25,9 +25,7 @@ export default function KanbanBoard({ tasks, projects, activeProjectId, onUpdate
   const [showModal, setShowModal] = useState<Task['status'] | null>(null);
 
   const filteredTasks = activeProjectId ? tasks.filter(t => t.projectId === activeProjectId) : tasks;
-
   const getColumnTasks = (status: Task['status']) => filteredTasks.filter(t => t.status === status);
-
   const getProject = (projectId: string) => projects.find(p => p.projectId === projectId);
 
   const handleDragEnd = (result: DropResult) => {
@@ -41,7 +39,8 @@ export default function KanbanBoard({ tasks, projects, activeProjectId, onUpdate
   return (
     <>
       <DragDropContext onDragEnd={handleDragEnd}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', height: '100%', alignItems: 'start' }}>
+        {/* kanban-grid class makes it 1 column on mobile */}
+        <div className="kanban-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', alignItems: 'start' }}>
           {COLUMNS.map(col => {
             const colTasks = getColumnTasks(col.id);
             return (
@@ -50,12 +49,11 @@ export default function KanbanBoard({ tasks, projects, activeProjectId, onUpdate
                 <div style={{ padding: '0.875rem 1rem', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <span style={{ width: 8, height: 8, borderRadius: '50%', background: col.color, display: 'inline-block' }} />
-                    <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text)' }}>{col.label}</span>
+                    <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>{col.label}</span>
                     <span style={{ fontSize: '0.75rem', background: 'var(--surface2)', color: 'var(--text-muted)', borderRadius: 20, padding: '0.1rem 0.5rem', fontWeight: 500 }}>{colTasks.length}</span>
                   </div>
-                  <button onClick={() => setShowModal(col.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', display: 'flex', borderRadius: 6, padding: 4 }}
-                    onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
-                    onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-muted)')}>
+                  <button onClick={() => setShowModal(col.id)}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', display: 'flex', borderRadius: 6, padding: 4 }}>
                     <Plus size={16} />
                   </button>
                 </div>
@@ -69,7 +67,7 @@ export default function KanbanBoard({ tasks, projects, activeProjectId, onUpdate
                         <Draggable key={task.taskId} draggableId={task.taskId} index={idx}>
                           {(provided, snapshot) => (
                             <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}
-                              style={{ ...provided.draggableProps.style, opacity: snapshot.isDragging ? 0.85 : 1, transform: snapshot.isDragging ? `${provided.draggableProps.style?.transform} rotate(2deg)` : provided.draggableProps.style?.transform }}>
+                              style={{ ...provided.draggableProps.style, opacity: snapshot.isDragging ? 0.85 : 1 }}>
                               <TaskCard task={task} project={getProject(task.projectId)} onUpdate={onUpdate} onDelete={onDelete} />
                             </div>
                           )}
