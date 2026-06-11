@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
-import { Plus, RefreshCw, Wifi, WifiOff } from 'lucide-react';
+import { Plus, RefreshCw, Wifi, WifiOff, Menu } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 import KanbanBoard from '@/components/KanbanBoard';
 import ListView from '@/components/ListView';
@@ -18,6 +18,7 @@ export default function Home() {
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isDemo, setIsDemo] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const loadData = useCallback(async () => {
     if (DEMO_MODE) return;
@@ -68,23 +69,29 @@ export default function Home() {
   return (
     <div style={{ display: 'flex', minHeight: '100vh' }}>
       <Sidebar projects={projects} activeProject={activeProject} activeView={activeView}
+        isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)}
         onProjectSelect={setActiveProject} onViewChange={setActiveView} onCreateProject={handleCreateProject} />
 
       {/* Main Content */}
-      <main style={{ marginLeft: 240, flex: 1, padding: '2rem', minHeight: '100vh' }}>
+      <main className="main-content">
         {/* Top bar */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
-          <div>
-            <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text)' }}>
-              {activeView === 'dashboard' && 'Dashboard'}
-              {activeView === 'board' && (activeProjectObj ? activeProjectObj.name : 'All Tasks — Board')}
-              {activeView === 'list' && (activeProjectObj ? activeProjectObj.name : 'All Tasks — List')}
-            </h2>
-            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: 2 }}>
-              {filteredTasks.length} tasks · {filteredTasks.filter(t => t.status === 'done').length} completed
-            </p>
+        <div className="topbar">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', minWidth: 0 }}>
+            <button className="menu-btn" onClick={() => setSidebarOpen(true)} aria-label="Open menu">
+              <Menu size={18} />
+            </button>
+            <div style={{ minWidth: 0 }}>
+              <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text)' }}>
+                {activeView === 'dashboard' && 'Dashboard'}
+                {activeView === 'board' && (activeProjectObj ? activeProjectObj.name : 'All Tasks — Board')}
+                {activeView === 'list' && (activeProjectObj ? activeProjectObj.name : 'All Tasks — List')}
+              </h2>
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: 2 }}>
+                {filteredTasks.length} tasks · {filteredTasks.filter(t => t.status === 'done').length} completed
+              </p>
+            </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div className="topbar-actions">
             {/* Demo/Live Badge */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.3rem 0.7rem', borderRadius: 20, background: isDemo ? 'rgba(251,146,60,0.1)' : 'rgba(74,222,128,0.1)', border: `1px solid ${isDemo ? 'rgba(251,146,60,0.3)' : 'rgba(74,222,128,0.3)'}` }}>
               {isDemo ? <WifiOff size={12} color="var(--warning)" /> : <Wifi size={12} color="var(--success)" />}

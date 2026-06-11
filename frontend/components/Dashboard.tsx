@@ -35,7 +35,7 @@ export default function Dashboard({ tasks, projects }: DashboardProps) {
       </div>
 
       {/* Stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem', marginBottom: '2rem' }}>
+      <div className="stats-grid">
         {stats.map(({ label, value, icon: Icon, color, bg }) => (
           <div key={label} className="card" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <div style={{ background: bg, borderRadius: 10, padding: '0.65rem', display: 'flex' }}>
@@ -49,7 +49,7 @@ export default function Dashboard({ tasks, projects }: DashboardProps) {
         ))}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+      <div className="dashboard-grid">
         {/* Progress */}
         <div className="card">
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>

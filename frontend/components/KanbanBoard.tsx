@@ -41,7 +41,7 @@ export default function KanbanBoard({ tasks, projects, activeProjectId, onUpdate
   return (
     <>
       <DragDropContext onDragEnd={handleDragEnd}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', height: '100%', alignItems: 'start' }}>
+        <div className="kanban-grid" style={{ height: '100%' }}>
           {COLUMNS.map(col => {
             const colTasks = getColumnTasks(col.id);
             return (

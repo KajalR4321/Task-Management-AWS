@@ -55,8 +55,9 @@ export default function ListView({ tasks, projects, activeProjectId, onUpdate, o
       </div>
 
       <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+        <div className="list-scroll">
         {/* Header */}
-        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 80px', gap: '1rem', padding: '0.75rem 1rem', borderBottom: '1px solid var(--border)', background: 'var(--surface2)' }}>
+        <div className="list-row" style={{ padding: '0.75rem 1rem', borderBottom: '1px solid var(--border)', background: 'var(--surface2)' }}>
           {([['title', 'Task'], ['status', 'Status'], ['priority', 'Priority'], ['dueDate', 'Due Date']] as [SortKey, string][]).map(([k, label]) => (
             <button key={k} onClick={() => handleSort(k)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', display: 'flex', alignItems: 'center', gap: '0.3rem', textAlign: 'left' }}>
               {label} <SortIcon k={k} />
@@ -72,7 +73,7 @@ export default function ListView({ tasks, projects, activeProjectId, onUpdate, o
           const project = getProject(task.projectId);
           const overdue = task.dueDate && task.status !== 'done' && isPast(parseISO(task.dueDate));
           return (
-            <div key={task.taskId} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 80px', gap: '1rem', padding: '0.75rem 1rem', borderBottom: i < filtered.length - 1 ? '1px solid var(--border)' : 'none', alignItems: 'center', transition: 'background 0.1s' }}
+            <div key={task.taskId} className="list-row" style={{ padding: '0.75rem 1rem', borderBottom: i < filtered.length - 1 ? '1px solid var(--border)' : 'none', alignItems: 'center', transition: 'background 0.1s' }}
               onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
               onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
               
@@ -114,6 +115,7 @@ export default function ListView({ tasks, projects, activeProjectId, onUpdate, o
             </div>
           );
         })}
+        </div>
       </div>
     </div>
   );

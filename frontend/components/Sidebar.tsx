@@ -7,6 +7,8 @@ interface SidebarProps {
   projects: Project[];
   activeProject: string | null;
   activeView: string;
+  isOpen?: boolean;
+  onClose?: () => void;
   onProjectSelect: (id: string | null) => void;
   onViewChange: (view: string) => void;
   onCreateProject: (name: string, color: string) => void;
@@ -14,7 +16,7 @@ interface SidebarProps {
 
 const COLORS = ['#7c6af7','#4ade80','#fb923c','#f97066','#38bdf8','#e879f9','#fbbf24'];
 
-export default function Sidebar({ projects, activeProject, activeView, onProjectSelect, onViewChange, onCreateProject }: SidebarProps) {
+export default function Sidebar({ projects, activeProject, activeView, isOpen, onClose, onProjectSelect, onViewChange, onCreateProject }: SidebarProps) {
   const [showNewProject, setShowNewProject] = useState(false);
   const [newName, setNewName] = useState('');
   const [newColor, setNewColor] = useState(COLORS[0]);
@@ -28,7 +30,9 @@ export default function Sidebar({ projects, activeProject, activeView, onProject
   };
 
   return (
-    <aside style={{ width: 240, background: 'var(--surface)', borderRight: '1px solid var(--border)', display: 'flex', flexDirection: 'column', height: '100vh', position: 'fixed', left: 0, top: 0 }}>
+    <>
+      <div className={`sidebar-overlay${isOpen ? ' open' : ''}`} onClick={onClose} aria-hidden="true" />
+      <aside className={`sidebar${isOpen ? ' open' : ''}`}>
       {/* Logo */}
       <div style={{ padding: '1.25rem 1.25rem 1rem', borderBottom: '1px solid var(--border)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
@@ -46,7 +50,7 @@ export default function Sidebar({ projects, activeProject, activeView, onProject
           { id: 'board', label: 'Board View', icon: Kanban },
           { id: 'list', label: 'List View', icon: List },
         ].map(({ id, label, icon: Icon }) => (
-          <button key={id} onClick={() => { onViewChange(id); onProjectSelect(null); }}
+          <button key={id} onClick={() => { onViewChange(id); onProjectSelect(null); onClose?.(); }}
             style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.55rem 0.75rem', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: '0.875rem', fontWeight: 500, marginBottom: 2,
               background: activeView === id && !activeProject ? 'var(--accent-soft)' : 'transparent',
               color: activeView === id && !activeProject ? 'var(--accent)' : 'var(--text-muted)',
@@ -66,7 +70,7 @@ export default function Sidebar({ projects, activeProject, activeView, onProject
         </div>
 
         {projects.map(p => (
-          <button key={p.projectId} onClick={() => { onProjectSelect(p.projectId); onViewChange('board'); }}
+          <button key={p.projectId} onClick={() => { onProjectSelect(p.projectId); onViewChange('board'); onClose?.(); }}
             style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.5rem 0.75rem', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: '0.85rem', marginBottom: 2,
               background: activeProject === p.projectId ? 'var(--accent-soft)' : 'transparent',
               color: activeProject === p.projectId ? 'var(--accent)' : 'var(--text-muted)',
@@ -105,5 +109,6 @@ export default function Sidebar({ projects, activeProject, activeView, onProject
         </div>
       </div>
     </aside>
+    </>
   );
 }
