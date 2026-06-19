@@ -1,14 +1,34 @@
-// lib/auth.ts
+export interface AuthUser {
+  userId: string;
+  name: string;
+  email: string;
+  token: string;
+}
 
 export const auth = {
-  getUser() {
+  getUser: (): AuthUser | null => {
     if (typeof window === 'undefined') return null;
-
-    const user = localStorage.getItem('user');
-    return user ? JSON.parse(user) : null;
+    try {
+      const data = localStorage.getItem('taskflow_user');
+      return data ? JSON.parse(data) : null;
+    } catch {
+      return null;
+    }
   },
 
-  logout() {
-    localStorage.removeItem('user');
-  }
+  setUser: (user: AuthUser): void => {
+    if (typeof window === 'undefined') return;
+    localStorage.setItem('taskflow_user', JSON.stringify(user));
+  },
+
+  logout: (): void => {
+    if (typeof window === 'undefined') return;
+    localStorage.removeItem('taskflow_user');
+    window.location.href = '/login';
+  },
+
+  isLoggedIn: (): boolean => {
+    if (typeof window === 'undefined') return false;
+    return !!auth.getUser();
+  },
 };
