@@ -3,7 +3,7 @@
 > Built for Cybernetics Software Pvt. Ltd. — Option B: Web App Development
 
 ## Live Demo
-🔗 [Deploy link here after AWS Amplify setup]
+🔗 [https://main.d1fo95auxwm439.amplifyapp.com/]
 
 ## Tech Stack
 - **Frontend**: Next.js 16 (App Router, TypeScript, Tailwind CSS)
@@ -53,9 +53,6 @@ npm run dev
 # Visit http://localhost:3000 (runs in demo mode)
 ```
 
-## Deployment
-See `DEPLOYMENT_GUIDE.md` for complete step-by-step AWS deployment instructions.
 
-## Submission
-Email: cspltask@gmail.com
-Subject: #SDTask – web/app development
+
+
